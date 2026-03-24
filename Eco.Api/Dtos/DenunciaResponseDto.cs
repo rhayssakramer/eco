@@ -8,8 +8,10 @@ public class DenunciaResponseDto
 
     public TipoDenuncia Tipo { get; set; }
 
-    public string Descricao { get; set; } = string.Empty;
+    public string? Descricao { get; set; } = string.Empty;
 
+    public string Codigo { get; set; } = string.Empty;
+    
     public DateTime DataCriacao { get; set; }
 
     public StatusDenuncia Status { get; set; }

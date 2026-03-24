@@ -23,6 +23,9 @@ namespace Eco.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("Codigo")
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("TEXT");
 
@@ -44,6 +47,29 @@ namespace Eco.Api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Denuncias");
+                });
+
+            modelBuilder.Entity("Eco.Api.Models.Evidencia", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Caminho")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("DataUpload")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("DenunciaId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("NomeArquivo")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Evidencias");
                 });
 #pragma warning restore 612, 618
         }

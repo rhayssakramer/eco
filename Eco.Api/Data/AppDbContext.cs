@@ -11,4 +11,5 @@ public class AppDbContext : DbContext
     }
 
     public DbSet<Denuncia> Denuncias { get; set; }
+    public DbSet<Evidencia> Evidencias { get; set; }
 }
