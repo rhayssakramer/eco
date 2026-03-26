@@ -1,11 +1,14 @@
 using Eco.Api.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicionar serrviços
+// Adicionar serviços
 builder.Services.AddControllers();
+builder.Services.AddScoped<DadosPublicosService>();
+builder.Services.AddHttpClient<DadosPublicosService>();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(
@@ -23,6 +26,13 @@ if (app.Environment.IsDevelopment()){
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "uploads")),
+    RequestPath = "/uploads"
+});
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
