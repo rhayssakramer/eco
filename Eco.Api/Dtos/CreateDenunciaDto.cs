@@ -5,6 +5,10 @@ namespace Eco.Api.Dtos;
 
 public class CreateDenunciaDto
 {
+    public bool Anonima { get; set; } = true;
+
+    public int? UsuarioId { get; set; }
+
     [Required]
     public TipoDenuncia Tipo { get; set; }
 
