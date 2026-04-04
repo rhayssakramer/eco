@@ -3,6 +3,7 @@ using System;
 using Eco.Api.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Eco.Api.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260402172805_AddUsuarios")]
+    partial class AddUsuarios
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.3");
@@ -21,9 +24,6 @@ namespace Eco.Api.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("Anonima")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Codigo")
@@ -45,9 +45,6 @@ namespace Eco.Api.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Tipo")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("UsuarioId")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -84,48 +81,18 @@ namespace Eco.Api.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Bairro")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Cep")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Cidade")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Complemento")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Cpf")
-                        .HasColumnType("TEXT");
-
                     b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateTime?>("DataNascimento")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Estado")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("FotoPerfil")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Logradouro")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("NomeCompleto")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Numero")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Rg")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SenhaHash")

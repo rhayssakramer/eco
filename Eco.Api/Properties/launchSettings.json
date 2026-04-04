@@ -7,7 +7,10 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:5228",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ECO_ADMIN_NOME": "Administradora ECO",
+        "ECO_ADMIN_EMAIL": "admin@eco.local",
+        "ECO_ADMIN_SENHA": "Admin@123456"
       }
     },
     "https": {
@@ -16,7 +19,34 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:7109;http://localhost:5228",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ECO_ADMIN_NOME": "Administradora ECO",
+        "ECO_ADMIN_EMAIL": "admin@eco.local",
+        "ECO_ADMIN_SENHA": "Admin@123456"
+      }
+    },
+    "homolog": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5229",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Homolog",
+        "ECO_ADMIN_NOME": "Administradora ECO",
+        "ECO_ADMIN_EMAIL": "admin@homolog.eco.local",
+        "ECO_ADMIN_SENHA": "Admin@123456"
+      }
+    },
+    "production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5230",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "ECO_ADMIN_NOME": "Administradora ECO",
+        "ECO_ADMIN_EMAIL": "admin@eco.local",
+        "ECO_ADMIN_SENHA": "Admin@123456"
       }
     }
   }

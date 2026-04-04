@@ -5,5 +5,6 @@ public enum StatusDenuncia
     Recebido,
     Emergencia,
     EmAnalise,
-    Finalizado
+    Finalizado,
+    Reprovado
 }

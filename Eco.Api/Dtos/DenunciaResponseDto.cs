@@ -6,6 +6,14 @@ public class DenunciaResponseDto
 {
     public int Id { get; set; }
 
+    public bool Anonima { get; set; }
+
+    public int? UsuarioId { get; set; }
+
+    public string? UsuarioNome { get; set; }
+
+    public string? UsuarioEmail { get; set; }
+
     public TipoDenuncia Tipo { get; set; }
 
     public string? Descricao { get; set; } = string.Empty;
