@@ -1,0 +1,169 @@
+<div class="profile-menu-container">
+  <button class="profile-trigger" (click)="toggleMenu()">
+    <div class="profile-avatar">
+      @if (userData().photoUrl) {
+        <img [src]="userData().photoUrl" alt="Foto de perfil" class="avatar-image" />
+      } @else {
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      }
+    </div>
+  </button>
+
+  @if (isMenuOpen()) {
+    <div class="profile-menu" (click)="closeMenu()">
+      <div class="menu-content" (click)="$event.stopPropagation()">
+        <!-- Header com Avatar e Informações -->
+        <div class="menu-header">
+          <div class="avatar-large">
+            @if (userData().photoUrl) {
+              <img [src]="userData().photoUrl" alt="Foto de perfil" class="avatar-image" />
+            } @else {
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            }
+          </div>
+          <div class="user-details">
+            <p class="user-name">{{ userData().name }}</p>
+            <p class="user-email">{{ userData().email }}</p>
+          </div>
+        </div>
+
+        <!-- Menu Items -->
+        <button class="menu-item" (click)="editarPerfil()">
+          <span class="menu-text">Editar Perfil</span>
+        </button>
+
+        <!-- Sair -->
+        <button class="menu-item logout" (click)="sair()">
+          <span class="menu-text">Sair</span>
+        </button>
+      </div>
+    </div>
+  }
+
+  @if (isEditProfileOpen()) {
+    <div class="edit-overlay" (click)="fecharTooltipPerfil()">
+      <div class="edit-tooltip" (click)="$event.stopPropagation()">
+        <div class="edit-header">
+          <h3>Editar perfil</h3>
+          <button type="button" class="close-edit" (click)="fecharTooltipPerfil()">✕</button>
+        </div>
+
+        @if (carregandoPerfil()) {
+          <p class="loading-text">Carregando dados...</p>
+        } @else {
+          <form class="edit-form" [formGroup]="perfilForm" (ngSubmit)="salvarPerfil()">
+            <div class="foto-section">
+              <div class="avatar-large">
+                @if (fotoPreview()) {
+                  <img [src]="fotoPreview()" alt="Prévia da foto" class="avatar-image" />
+                } @else if (userData().photoUrl) {
+                  <img [src]="userData().photoUrl" alt="Foto atual" class="avatar-image" />
+                } @else {
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                }
+              </div>
+              <label class="file-btn" for="perfilFotoInput">Alterar imagem</label>
+              <input id="perfilFotoInput" type="file" accept="image/*" (change)="onArquivoSelecionado($event)" />
+            </div>
+
+            <label>
+              Nome completo
+              <input type="text" formControlName="nomeCompleto" />
+            </label>
+
+            <label>
+              E-mail (bloqueado)
+              <input type="email" formControlName="email" readonly />
+            </label>
+
+            <label>
+              Senha (bloqueada)
+              <input type="password" formControlName="senhaBloqueada" readonly />
+            </label>
+
+            <label class="check-line">
+              <input type="checkbox" [checked]="alterarSenha()" (change)="toggleAlterarSenha()" />
+              Alterar senha
+            </label>
+
+            @if (alterarSenha()) {
+              <label>
+                Nova senha
+                <input type="password" formControlName="novaSenha" placeholder="Mínimo 6 caracteres" />
+              </label>
+            }
+
+            <div class="grid-2">
+              <label>
+                Data de nascimento
+                <input type="date" formControlName="dataNascimento" />
+              </label>
+              <label>
+                CPF
+                <input type="text" formControlName="cpf" placeholder="000.000.000-00" />
+              </label>
+            </div>
+
+            <label>
+              RG
+              <input type="text" formControlName="rg" placeholder="00.000.000-0" />
+            </label>
+
+            <div class="grid-2">
+              <label>
+                CEP
+                <input type="text" formControlName="cep" placeholder="00000-000" (blur)="buscarCep()" />
+              </label>
+              <label>
+                Número
+                <input type="text" formControlName="numero" />
+              </label>
+            </div>
+
+            <label>
+              Logradouro
+              <input type="text" formControlName="logradouro" />
+            </label>
+
+            <label>
+              Complemento
+              <input type="text" formControlName="complemento" />
+            </label>
+
+            <div class="grid-3">
+              <label>
+                Bairro
+                <input type="text" formControlName="bairro" />
+              </label>
+              <label>
+                Cidade
+                <input type="text" formControlName="cidade" />
+              </label>
+              <label>
+                UF
+                <input type="text" formControlName="estado" maxlength="2" />
+              </label>
+            </div>
+
+            <div class="actions">
+              <button type="button" class="btn-cancel" (click)="fecharTooltipPerfil()">Cancelar</button>
+              <button type="submit" class="btn-save" [disabled]="salvandoPerfil()">
+                @if (salvandoPerfil()) {
+                  Salvando...
+                } @else {
+                  Salvar
+                }
+              </button>
+            </div>
+          </form>
+        }
+      </div>
+    </div>
+  }
+</div>

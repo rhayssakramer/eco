@@ -1,0 +1,43 @@
+<section class="auth-page">
+  <article class="auth-card">
+    <h1>Entrar</h1>
+    <p class="subtitle">Use o e-mail cadastrado ao criar seu perfil.</p>
+
+    <form [formGroup]="loginForm" (ngSubmit)="entrar()">
+      <label>
+        E-mail
+        <input type="email" formControlName="email" placeholder="email@exemplo.com" />
+      </label>
+
+      <label>
+        Senha
+        <div class="password-field">
+          <input 
+            [type]="mostrarSenha ? 'text' : 'password'" 
+            formControlName="senha" 
+            placeholder="••••••" 
+          />
+          <button 
+            type="button" 
+            class="toggle-password" 
+            (click)="toggleMostrarSenha()"
+            aria-label="Mostrar/ocultar senha"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </label>
+
+      <button class="btn-entrar" type="submit">Entrar</button>
+    </form>
+
+    <a routerLink="/recuperar-senha" class="link-esqueci">Esqueci minha senha</a>
+
+    <p class="signup-text">
+      Ainda não se cadastrou? <a routerLink="/cadastro" class="link-cadastro">Cadastre-se aqui</a>
+    </p>
+  </article>
+</section>

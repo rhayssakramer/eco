@@ -1,0 +1,628 @@
+<div class="dashboard-page">
+  <header class="dashboard-header">
+    <div class="header-left">
+      <div class="logo-section">
+        <img src="logo.svg" alt="ECO" class="dashboard-logo" />
+      </div>
+    </div>
+    <div class="header-right">
+      <app-profile-menu></app-profile-menu>
+    </div>
+  </header>
+
+  <nav class="dashboard-nav">
+    <button type="button" class="nav-item nav-button" [class.active]="visualizacao() === 'inicio'" (click)="abrirInicio()">Início</button>
+    @if (isAdmin()) {
+      <button type="button" class="nav-item nav-button" [class.active]="visualizacao() === 'denuncias'" (click)="abrirDenuncias()">Denúncias</button>
+      <button type="button" class="nav-item nav-button" [class.active]="visualizacao() === 'dados-externos'" (click)="abrirDadosExternos()">Dados Externos</button>
+    }
+    <button type="button" class="nav-item nav-button" (click)="$event.preventDefault()">Pânico TJPE</button>
+    <button type="button" class="nav-item nav-button" (click)="$event.preventDefault()">Ajuda</button>
+  </nav>
+
+  <main class="dashboard-content">
+    @if (visualizacao() === 'inicio') {
+    <!-- Cards de Estatísticas -->
+    <section class="stats-cards">
+      <div class="stat-card">
+        <div class="stat-icon purple">📊</div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats().totalDenuncias | number }}</div>
+          <div class="stat-label">Denúncias no ECO</div>
+          <div class="stat-period">Este ano</div>
+        </div>
+      </div>
+
+      <div class="stat-card emergency">
+        <div class="stat-icon red">🚨</div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats().emergencias }}</div>
+          <div class="stat-label">Emergências</div>
+          <div class="stat-period">⚠ Botão de pânico</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon blue">📈</div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats().ultimaSemana }}</div>
+          <div class="stat-label">Última semana</div>
+          <div class="stat-period">+12% vs anterior</div>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon teal">📑</div>
+        <div class="stat-info">
+          <div class="stat-value">{{ stats().dadosPublicos | number }}</div>
+          <div class="stat-label">Dados públicos PE</div>
+          <div class="stat-period">Casos em 2024</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mapa e Estatísticas -->
+    <section class="map-section">
+      <div class="map-card">
+        <h2>Mapa de Incidência de Violência</h2>
+        <div class="map-filters">
+          <select class="filter-select">
+            <option>📅 Últimos 30 dias</option>
+            <option>Últimos 7 dias</option>
+            <option>Último mês</option>
+          </select>
+          <select class="filter-select">
+            <option>Tipo: Todos</option>
+            <option>Violência Física</option>
+            <option>Violência Psicológica</option>
+          </select>
+          <select class="filter-select">
+            <option>Status: Todos</option>
+            <option>Em análise</option>
+            <option>Aprovado</option>
+          </select>
+        </div>
+
+        <div class="map-container">
+          <div class="map-placeholder">
+            <div class="map-label">PERNAMBUCO</div>
+            <div class="map-label-city">Recife</div>
+            <div class="heatmap-legend">
+              <span class="legend-label">Alta</span>
+              <div class="legend-gradient"></div>
+              <span class="legend-label">Baixa</span>
+            </div>
+          </div>
+
+          <div class="map-stats">
+            <div class="map-stat-card">
+              <div class="map-stat-icon">📊</div>
+              <div class="map-stat-info">
+                <div class="map-stat-value">2485</div>
+                <div class="map-stat-label">Total de Denúncias</div>
+              </div>
+            </div>
+
+            <div class="map-stat-card">
+              <div class="map-stat-icon">📅</div>
+              <div class="map-stat-info">
+                <div class="map-stat-value">132</div>
+                <div class="map-stat-label">Casos na Última Semana</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="side-panels">
+        <div class="panel-card">
+          <h3>Tipos de Violência</h3>
+          <div class="tipos-chart">
+            @for (tipo of tiposViolencia(); track tipo.tipo) {
+              <div class="tipo-item">
+                <div class="tipo-bar" [style.width.%]="tipo.percentual" [style.background]="tipo.cor"></div>
+                <span class="tipo-label">{{ tipo.tipo }}</span>
+                <span class="tipo-percent">{{ tipo.percentual }}%</span>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="panel-card">
+          <h3>Áreas de Risco</h3>
+          <ul class="areas-list">
+            @for (area of areasRisco(); track area) {
+              <li>📍 {{ area }}</li>
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Horário e Dicas -->
+    <section class="bottom-section">
+      <div class="panel-card">
+        <h3>Horário das Ocorrências</h3>
+        <div class="horario-chart">
+          <div class="chart-bars">
+            <div class="bar" style="height: 20%"></div>
+            <div class="bar" style="height: 25%"></div>
+            <div class="bar" style="height: 30%"></div>
+            <div class="bar" style="height: 50%"></div>
+            <div class="bar" style="height: 70%"></div>
+            <div class="bar" style="height: 85%"></div>
+            <div class="bar" style="height: 95%"></div>
+            <div class="bar" style="height: 80%"></div>
+            <div class="bar" style="height: 60%"></div>
+            <div class="bar" style="height: 40%"></div>
+            <div class="bar" style="height: 25%"></div>
+            <div class="bar" style="height: 15%"></div>
+          </div>
+          <div class="chart-labels">
+            <span>00h</span>
+            <span>06h</span>
+            <span>12h</span>
+            <span>18h</span>
+            <span>24h</span>
+          </div>
+          <div class="chart-info">Noite e Madrugada</div>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h3>Dicas de Segurança</h3>
+        <ul class="dicas-list">
+          @for (dica of dicasSeguranca(); track dica) {
+            <li>✓ {{ dica }}</li>
+          }
+        </ul>
+      </div>
+
+      <div class="panel-card">
+        <h3>Locais de Apoio</h3>
+        <div class="apoio-grid">
+          <div class="apoio-card">
+            <div class="apoio-icon">🏛️</div>
+            <div class="apoio-label">Delegacia da Mulher</div>
+          </div>
+          <div class="apoio-card">
+            <div class="apoio-icon">👥</div>
+            <div class="apoio-label">Centro de Apoio</div>
+          </div>
+          <div class="apoio-card">
+            <div class="apoio-icon">📞</div>
+            <div class="apoio-label">Ligue 180</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    }
+
+    @if (visualizacao() === 'denuncias' && isAdmin()) {
+      <section class="admin-approval-section panel-card">
+        <div class="admin-header-inline">
+          <div>
+            <h3>Aprovação de Denúncias</h3>
+            <p class="admin-subtitle">Gestão interna exibida no lugar do dashboard.</p>
+          </div>
+          <div class="admin-actions-header">
+            <button class="btn-refresh" type="button" (click)="carregarDenuncias()">Atualizar</button>
+          </div>
+        </div>
+
+        <div class="admin-filters">
+          <input
+            class="filter-input"
+            type="text"
+            placeholder="Buscar por código, descrição, nome ou e-mail"
+            [value]="filtroTermo()"
+            (input)="atualizarFiltroTermo($any($event.target).value)"
+          />
+
+          <select class="filter-select-admin" [value]="filtroStatus() ?? ''" (change)="atualizarFiltroStatus($any($event.target).value)">
+            <option value="">Todos status</option>
+            <option value="0">Recebido</option>
+            <option value="1">Emergência</option>
+            <option value="2">Em análise</option>
+            <option value="3">Finalizado</option>
+            <option value="4">Reprovado</option>
+          </select>
+
+          <select class="filter-select-admin" [value]="filtroTipo() ?? ''" (change)="atualizarFiltroTipo($any($event.target).value)">
+            <option value="">Todos tipos</option>
+            <option value="0">Violência</option>
+            <option value="1">Assédio</option>
+            <option value="2">Discriminação</option>
+            <option value="3">Outro</option>
+          </select>
+
+          <select class="filter-select-admin" [value]="filtroOrigem()" (change)="atualizarFiltroOrigem($any($event.target).value)">
+            <option value="todas">Todas origens</option>
+            <option value="anonima">Apenas anônimas</option>
+            <option value="identificada">Apenas identificadas</option>
+          </select>
+
+          <button class="btn-refresh" type="button" (click)="limparFiltros()">Limpar</button>
+        </div>
+
+        @if (carregandoDenuncias()) {
+          <p class="admin-feedback">Carregando denúncias...</p>
+        } @else if (denunciasFiltradas().length === 0) {
+          <p class="admin-feedback">Nenhuma denúncia encontrada.</p>
+        } @else {
+          <div class="admin-table-container">
+            <table class="denuncias-table">
+              <thead>
+                <tr>
+                  <th>Código</th>
+                  <th>Origem</th>
+                  <th>Tipo</th>
+                  <th>Descrição</th>
+                  <th>Localidade</th>
+                  <th>Data/Hora</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (denuncia of denunciasFiltradas(); track denuncia.id) {
+                  <tr>
+                    <td class="codigo">{{ denuncia.codigo }}</td>
+                    <td>
+                      @if (denuncia.anonima) {
+                        <span class="status-badge status-reprovado">Anônima</span>
+                      } @else {
+                        <div class="origem-info">
+                          <strong>{{ denuncia.usuarioNome || 'Usuária cadastrada' }}</strong>
+                          <small>{{ denuncia.usuarioEmail || 'E-mail não disponível' }}</small>
+                        </div>
+                      }
+                    </td>
+                    <td>
+                      <span class="tipo-badge">{{ getTipoTexto(denuncia.tipo) }}</span>
+                    </td>
+                    <td class="descricao">{{ denuncia.descricao }}</td>
+                    <td class="data">{{ formatarLocalidade(denuncia) }}</td>
+                    <td class="data">{{ formatarData(denuncia.dataCriacao) }}</td>
+                    <td>
+                      <span class="status-badge" [ngClass]="getStatusClasse(denuncia.status)">
+                        {{ getStatusTexto(denuncia.status) }}
+                      </span>
+                    </td>
+                    <td class="acoes">
+                      <button class="btn-acao btn-aprovar icon-only" type="button" (click)="abrirDetalhes(denuncia)" title="Abrir detalhes" aria-label="Abrir detalhes">
+                        <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
+                      <div class="action-with-tooltip">
+                        <button class="btn-acao btn-reprovar icon-only" type="button" (click)="excluirDenuncia(denuncia.id, denuncia.codigo)" title="Excluir denúncia" aria-label="Excluir denúncia">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18" />
+                            <path d="M8 6V4h8v2" />
+                            <path d="M19 6l-1 14H6L5 6" />
+                          </svg>
+                        </button>
+                      </div>
+                      @if (denuncia.status === 0) {
+                        <button class="btn-acao btn-aprovar icon-only" type="button" (click)="aprovar(denuncia.id)" title="Mover para em análise" aria-label="Mover para em análise">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="m21 21-4.3-4.3" />
+                          </svg>
+                        </button>
+                        <button class="btn-acao btn-emergencia icon-only" type="button" (click)="marcarEmergencia(denuncia.id)" title="Marcar emergência" aria-label="Marcar emergência">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.3 3h3.4L12 15z" />
+                            <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
+                          </svg>
+                        </button>
+                        <button class="btn-acao btn-reprovar icon-only" type="button" (click)="reprovar(denuncia.id)" title="Reprovar denúncia" aria-label="Reprovar denúncia">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M6 18 18 6" />
+                          </svg>
+                        </button>
+                      }
+                      @if (denuncia.status === 1 || denuncia.status === 2) {
+                        <button class="btn-acao btn-aprovar icon-only" type="button" (click)="aprovar(denuncia.id)" title="Mover para em análise" aria-label="Mover para em análise">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="7" />
+                            <path d="m21 21-4.3-4.3" />
+                          </svg>
+                        </button>
+                        <button class="btn-acao btn-finalizar icon-only" type="button" (click)="finalizar(denuncia.id)" title="Finalizar denúncia" aria-label="Finalizar denúncia">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 6 9 17l-5-5" />
+                          </svg>
+                        </button>
+                        <button class="btn-acao btn-reprovar icon-only" type="button" (click)="reprovar(denuncia.id)" title="Reprovar denúncia" aria-label="Reprovar denúncia">
+                          <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="9" />
+                            <path d="M6 18 18 6" />
+                          </svg>
+                        </button>
+                      }
+                      @if (denuncia.status === 3) {
+                        <span class="texto-finalizado">Concluída</span>
+                      }
+                      @if (denuncia.status === 4) {
+                        <span class="texto-reprovado">Reprovada</span>
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+
+    @if (visualizacao() === 'dados-externos' && isAdmin()) {
+      <section class="panel-card external-data-section">
+        <div class="admin-header-inline">
+          <div>
+            <h3>Cadastro de Dados Externos</h3>
+            <p class="admin-subtitle">Esses dados também alimentam o mapa da Home.</p>
+          </div>
+          <div class="admin-actions-header">
+            <button class="btn-refresh" type="button" (click)="carregarDadosExternos()">Atualizar lista</button>
+          </div>
+        </div>
+
+        <div class="external-form-grid">
+          <label>
+            Bairro
+            <input
+              class="filter-input"
+              type="text"
+              placeholder="Ex.: Boa Viagem"
+              [value]="novoDadoExterno().bairro"
+              (input)="atualizarCampoDadoExterno('bairro', $any($event.target).value)"
+            />
+          </label>
+
+          <label>
+            Tipo
+            <input
+              class="filter-input"
+              type="text"
+              placeholder="Ex.: Violência Física"
+              [value]="novoDadoExterno().tipo"
+              (input)="atualizarCampoDadoExterno('tipo', $any($event.target).value)"
+            />
+          </label>
+
+          <label>
+            Quantidade
+            <input
+              class="filter-input"
+              type="number"
+              min="1"
+              [value]="novoDadoExterno().quantidade"
+              (input)="atualizarCampoDadoExterno('quantidade', $any($event.target).value)"
+            />
+          </label>
+
+          <label>
+            Latitude
+            <input
+              class="filter-input"
+              type="number"
+              step="0.000001"
+              [value]="novoDadoExterno().latitude"
+              (input)="atualizarCampoDadoExterno('latitude', $any($event.target).value)"
+            />
+          </label>
+
+          <label>
+            Longitude
+            <input
+              class="filter-input"
+              type="number"
+              step="0.000001"
+              [value]="novoDadoExterno().longitude"
+              (input)="atualizarCampoDadoExterno('longitude', $any($event.target).value)"
+            />
+          </label>
+        </div>
+
+        <div class="external-actions">
+          <button class="btn-refresh" type="button" (click)="limparFormularioDadoExterno()">Limpar</button>
+          <button class="btn-save" type="button" [disabled]="salvandoDadoExterno()" (click)="salvarDadoExterno()">
+            {{ salvandoDadoExterno() ? 'Salvando...' : 'Salvar dado externo' }}
+          </button>
+        </div>
+
+        @if (carregandoDadosExternos()) {
+          <p class="admin-feedback">Carregando dados externos...</p>
+        } @else if (dadosExternos().length === 0) {
+          <p class="admin-feedback">Nenhum dado externo cadastrado.</p>
+        } @else {
+          <div class="admin-table-container">
+            <table class="denuncias-table external-table">
+              <thead>
+                <tr>
+                  <th>Bairro</th>
+                  <th>Tipo</th>
+                  <th>Quantidade</th>
+                  <th>Latitude</th>
+                  <th>Longitude</th>
+                  <th>Registro</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of dadosExternos(); track item.id) {
+                  <tr>
+                    <td>{{ item.bairro }}</td>
+                    <td>{{ item.tipo }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.latitude }}</td>
+                    <td>{{ item.longitude }}</td>
+                    <td class="data">{{ formatarDataRegistro(item.dataRegistro) }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
+  </main>
+
+  @if (denunciaSelecionada() || carregandoDetalhes()) {
+    <div class="detail-overlay" (click)="fecharDetalhes()">
+      <article class="detail-modal" (click)="$event.stopPropagation()">
+        <header class="detail-header">
+          <div>
+            <h3>Detalhes da denúncia</h3>
+            @if (denunciaSelecionada(); as denuncia) {
+              <p>Código: <strong>{{ denuncia.codigo }}</strong></p>
+            }
+          </div>
+          <button type="button" class="btn-refresh" (click)="fecharDetalhes()">✕</button>
+        </header>
+
+        @if (carregandoDetalhes()) {
+          <p class="admin-feedback">Carregando detalhes...</p>
+        } @else if (denunciaSelecionada(); as denuncia) {
+          <section class="detail-grid">
+            <div>
+              <h4>Identificação</h4>
+              @if (denuncia.anonima) {
+                <p>Denúncia anônima</p>
+              } @else {
+                <p><strong>{{ denuncia.usuarioNome || 'Usuária cadastrada' }}</strong></p>
+                <p>{{ denuncia.usuarioEmail || 'E-mail não disponível' }}</p>
+              }
+            </div>
+            <div>
+              <h4>Status atual</h4>
+              <span class="status-badge" [ngClass]="getStatusClasse(denuncia.status)">
+                {{ getStatusTexto(denuncia.status) }}
+              </span>
+            </div>
+            <div>
+              <h4>Tipo</h4>
+              <p>{{ getTipoTexto(denuncia.tipo) }}</p>
+            </div>
+            <div>
+              <h4>Localidade</h4>
+              <p>{{ formatarLocalidade(denuncia) }}</p>
+            </div>
+          </section>
+
+          <section class="detail-description">
+            <h4>Descrição</h4>
+            <p>{{ denuncia.descricao || 'Sem descrição.' }}</p>
+          </section>
+
+          <section class="detail-media">
+            <h4>Evidências</h4>
+            @if (denuncia.evidencias.length) {
+              <div class="media-grid">
+                @for (midia of denuncia.evidencias; track midia.id) {
+                  <div class="media-item">
+                    @if (ehMidiaVisualizavel(midia)) {
+                      <button type="button" class="media-thumb-button" (click)="abrirMidia(midia)" [attr.aria-label]="'Abrir ' + midia.nomeArquivo">
+                        @if (midia.tipo === 'imagem') {
+                          <img [src]="midia.url" [alt]="midia.nomeArquivo" />
+                        } @else {
+                          <video [src]="midia.url" muted></video>
+                          <span class="media-play-indicator">▶</span>
+                        }
+                        <span class="media-caption">Clique para ampliar</span>
+                      </button>
+                    } @else {
+                      <a [href]="midia.url" target="_blank" rel="noreferrer">Abrir {{ midia.nomeArquivo }}</a>
+                    }
+                  </div>
+                }
+              </div>
+            } @else {
+              <p>Sem evidências anexadas.</p>
+            }
+          </section>
+
+          <footer class="detail-actions">
+            <button class="btn-acao btn-aprovar icon-only" type="button" (click)="aprovar(denuncia.id)" title="Mover para em análise" aria-label="Mover para em análise">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="7" />
+                <path d="m21 21-4.3-4.3" />
+              </svg>
+            </button>
+            <button class="btn-acao btn-emergencia icon-only" type="button" (click)="marcarEmergencia(denuncia.id)" title="Marcar emergência" aria-label="Marcar emergência">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.3 3h3.4L12 15z" />
+                <circle cx="12" cy="19" r="1" fill="currentColor" stroke="none" />
+              </svg>
+            </button>
+            <button class="btn-acao btn-finalizar icon-only" type="button" (click)="finalizar(denuncia.id)" title="Finalizar denúncia" aria-label="Finalizar denúncia">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+            </button>
+            <button class="btn-acao btn-reprovar icon-only" type="button" (click)="reprovar(denuncia.id)" title="Reprovar denúncia" aria-label="Reprovar denúncia">
+              <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M6 18 18 6" />
+              </svg>
+            </button>
+            <div class="action-with-tooltip">
+              <button class="btn-acao btn-reprovar icon-only" type="button" (click)="excluirDenuncia(denuncia.id, denuncia.codigo)" title="Excluir denúncia" aria-label="Excluir denúncia">
+                <svg class="action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18" />
+                  <path d="M8 6V4h8v2" />
+                  <path d="M19 6l-1 14H6L5 6" />
+                </svg>
+              </button>
+            </div>
+          </footer>
+        }
+      </article>
+    </div>
+  }
+
+  @if (deleteTooltipVisible) {
+    <div class="delete-overlay" (click)="cancelarExclusaoPendente()">
+      <section class="delete-card" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <button type="button" class="delete-close" (click)="cancelarExclusaoPendente()" aria-label="Fechar">✕</button>
+
+        <div class="delete-card-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18" />
+            <path d="M8 6V4h8v2" />
+            <path d="M19 6l-1 14H6L5 6" />
+            <path d="M10 11v6" />
+            <path d="M14 11v6" />
+          </svg>
+        </div>
+
+        <h3>Excluir denúncia?</h3>
+        <p>{{ getDeleteTooltipMessage() }}</p>
+
+        <div class="delete-actions">
+          <button type="button" class="delete-cancel" (click)="cancelarExclusaoPendente()">Cancelar</button>
+          <button type="button" class="delete-confirm" (click)="confirmarExclusaoPendente()">Excluir agora</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  @if (midiaSelecionada(); as midia) {
+    <div class="media-overlay" (click)="fecharMidia()">
+      <section class="media-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+        <button type="button" class="media-close" (click)="fecharMidia()" aria-label="Fechar">✕</button>
+        <h3>{{ midia.nomeArquivo }}</h3>
+
+        @if (midia.tipo === 'imagem') {
+          <img class="media-fullview" [src]="midia.url" [alt]="midia.nomeArquivo" />
+        } @else if (midia.tipo === 'video') {
+          <video class="media-fullview" [src]="midia.url" controls autoplay></video>
+        }
+      </section>
+    </div>
+  }
+</div>
