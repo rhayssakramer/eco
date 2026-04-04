@@ -1,0 +1,446 @@
+<div class="page">
+  <header class="topbar">
+    <div class="brand">
+      <a href="#inicio" class="logo-link">
+        <img class="logo-img" src="logo.svg" alt="Logo ECO" />
+      </a>
+    </div>
+
+    <nav class="menu">
+      <a href="#inicio">Início</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#denuncia">Faça sua denúncia</a>
+    </nav>
+
+    <div class="auth-actions">
+      <button type="button" class="btn btn-light" (click)="abrirLoginTooltip()">Login</button>
+      <button type="button" class="btn btn-primary" (click)="abrirCadastroTooltip()">Cadastre-se</button>
+    </div>
+  </header>
+
+  @if (mostrarLoginTooltip() || mostrarCadastroTooltip() || mostrarRecuperarSenha() || mostrarDenunciaModal()) {
+    <div class="auth-overlay" (click)="fecharTooltips()"></div>
+
+    <div class="auth-center-card card" role="dialog" (click)="$event.stopPropagation()">
+      @if (mostrarLoginTooltip()) {
+        <button type="button" class="modal-close" (click)="fecharTooltips()">✕</button>
+        
+        <h1 class="modal-title">Entrar</h1>
+        <p class="modal-subtitle">Use o e-mail cadastrado ao criar seu perfil.</p>
+
+        <form [formGroup]="loginForm" (ngSubmit)="entrar()" class="modal-form">
+          <label class="modal-label">
+            E-mail
+            <input type="email" formControlName="email" placeholder="email@exemplo.com" class="modal-input" />
+          </label>
+
+          <label class="modal-label">
+            Senha
+            <div class="password-field">
+              <input 
+                [type]="mostrarSenhaLogin() ? 'text' : 'password'" 
+                formControlName="senha" 
+                placeholder="••••••" 
+                class="modal-input"
+              />
+              <button 
+                type="button" 
+                class="toggle-password" 
+                (click)="toggleSenhaLogin()"
+                aria-label="Mostrar/ocultar senha"
+              >
+                @if (mostrarSenhaLogin()) {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+          </label>
+
+          <button class="btn-modal-entrar" type="submit">Entrar</button>
+        </form>
+
+        <a href="#" class="link-esqueci" (click)="abrirRecuperarSenha($event)">Esqueci minha senha</a>
+
+        <p class="signup-text">
+          Ainda não se cadastrou? <a href="#" class="link-cadastro" (click)="trocarParaCadastro($event)">Cadastre-se aqui</a>
+        </p>
+
+      }
+
+      @if (mostrarCadastroTooltip()) {
+        <button type="button" class="modal-close" (click)="fecharTooltips()">✕</button>
+        
+        <h1 class="modal-title">Crie seu perfil</h1>
+
+        <form [formGroup]="cadastroForm" (ngSubmit)="cadastrar()" class="modal-form">
+          <label class="modal-label">
+            Seu Nome
+            <input type="text" formControlName="nomeCompleto" placeholder="Digite seu nome" class="modal-input" />
+          </label>
+
+          <label class="modal-label">
+            E-mail
+            <input type="email" formControlName="email" placeholder="email@exemplo.com" class="modal-input" />
+          </label>
+
+          <label class="modal-label">
+            Senha
+            <div class="password-field">
+              <input 
+                [type]="mostrarSenhaCadastro() ? 'text' : 'password'" 
+                formControlName="senha" 
+                placeholder="Crie uma senha (mín. 6 caracteres)" 
+                class="modal-input"
+              />
+              <button 
+                type="button" 
+                class="toggle-password" 
+                (click)="toggleSenhaCadastro()"
+                aria-label="Mostrar/ocultar senha"
+              >
+                @if (mostrarSenhaCadastro()) {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+          </label>
+
+          <label class="modal-label">
+            Confirmar Senha
+            <div class="password-field">
+              <input 
+                [type]="mostrarConfirmarSenha() ? 'text' : 'password'" 
+                formControlName="confirmarSenha" 
+                placeholder="Digite a senha novamente" 
+                class="modal-input"
+              />
+              <button 
+                type="button" 
+                class="toggle-password" 
+                (click)="toggleConfirmarSenha()"
+                aria-label="Mostrar/ocultar senha"
+              >
+                @if (mostrarConfirmarSenha()) {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                } @else {
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                }
+              </button>
+            </div>
+          </label>
+
+          <div class="modal-label">
+            Adicione sua foto
+            <div class="foto-upload-area">
+              <input
+                id="fotoPerfil"
+                class="foto-upload-input"
+                type="file"
+                accept="image/*"
+                (change)="selecionarFotoPerfil($event)"
+              />
+              <label class="foto-upload-box" for="fotoPerfil">
+                @if (fotoPerfilUrl()) {
+                  <img [src]="fotoPerfilUrl()" alt="Foto de perfil" class="foto-preview" />
+                } @else {
+                  <svg class="foto-icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                  <span class="foto-placeholder">Clique para escolher uma imagem</span>
+                }
+              </label>
+              @if (nomeArquivoFoto()) {
+                <button type="button" class="foto-remove" (click)="removerFoto()">✕</button>
+              }
+            </div>
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancelar" (click)="fecharTooltips()">Cancelar</button>
+            <button class="btn-modal-entrar" type="submit">Criar Perfil</button>
+          </div>
+        </form>
+
+      }
+
+      @if (mostrarRecuperarSenha()) {
+        <button type="button" class="modal-close" (click)="fecharTooltips()">✕</button>
+        
+        <h1 class="modal-title">Recuperação de Senha</h1>
+        <p class="modal-subtitle">Informe seu email cadastrado para receber um link de redefinição de senha.</p>
+
+        <form [formGroup]="recuperarSenhaForm" (ngSubmit)="enviarRecuperacaoSenha()" class="modal-form">
+          <label class="modal-label">
+            E-mail
+            <input type="email" formControlName="email" placeholder="email@exemplo.com" class="modal-input" />
+          </label>
+
+          <div class="modal-actions">
+            <button type="button" class="btn-cancelar" (click)="voltarParaLogin()">Voltar</button>
+            <button class="btn-modal-entrar" type="submit">Enviar</button>
+          </div>
+        </form>
+
+        <p class="signup-text">
+          Ainda não tem perfil? <a href="#" class="link-cadastro" (click)="trocarParaCadastro($event)">Crie seu perfil</a>
+        </p>
+      }
+
+      @if (mostrarDenunciaModal()) {
+        <button type="button" class="modal-close" (click)="fecharDenunciaModal()">✕</button>
+        
+        <h1 class="modal-title">
+          @if (denunciaForm.controls.anonima.value) {
+            🔒 Denúncia Anônima
+          } @else {
+            👤 Denúncia com Cadastro
+          }
+        </h1>
+        <p class="modal-subtitle">
+          @if (denunciaForm.controls.anonima.value) {
+            Sua identidade será totalmente protegida
+          } @else {
+            Acompanhe o status da sua denúncia
+          }
+        </p>
+
+        <form [formGroup]="denunciaForm" (ngSubmit)="enviarDenuncia()" class="modal-form">
+          @if (!denunciaForm.controls.anonima.value) {
+            <div class="aviso-cadastro">
+              <p>⚠️ Para denúncia com cadastro, você precisa estar logado.</p>
+              <button type="button" class="btn btn-light" (click)="abrirLoginTooltip()">🔑 Fazer Login</button>
+            </div>
+          }
+
+          <label class="modal-label">
+            Tipo de Violência
+            <select formControlName="tipo" class="modal-input">
+              @for (tipo of tipoOpcoes; track tipo.valor) {
+                <option [ngValue]="tipo.valor">{{ tipo.label }}</option>
+              }
+            </select>
+          </label>
+
+          <label class="modal-label">
+            Descrição
+            <textarea
+              formControlName="descricao"
+              rows="4"
+              placeholder="Descreva o que aconteceu..."
+              class="modal-input"
+            ></textarea>
+          </label>
+
+          <div class="modal-label">
+            📷 Adicionar Evidências (Imagens ou Vídeos)
+            <input
+              id="evidenciasDenuncia"
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              class="foto-upload-input"
+              (change)="selecionarEvidencias($event)"
+            />
+            @if (arquivosEvidencia().length === 0) {
+              <label for="evidenciasDenuncia" class="evidencias-box-modal evidencias-box-empty">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+                <span>Clique para adicionar fotos ou vídeos</span>
+              </label>
+            } @else {
+              <div class="evidencias-box-modal">
+                <div class="evidencias-lista">
+                  @for (arquivo of arquivosEvidencia(); track $index) {
+                    <div class="evidencia-item">
+                      <span>📄 {{ arquivo.name }}</span>
+                      <button type="button" (click)="removerEvidencia($index)">✕</button>
+                    </div>
+                  }
+                </div>
+                <button type="button" class="adicionar-mais" (click)="abrirSeletorArquivos()">
+                  + Adicionar mais
+                </button>
+              </div>
+            }
+          </div>
+
+          <small class="localizacao-info">
+            @if (geolocalizacaoOk()) {
+              📍 Sua localização foi detectada automaticamente.
+            } @else {
+              📍 Usando localização aproximada. Permita geolocalização para maior precisão.
+            }
+          </small>
+
+          <button class="btn-modal-entrar" type="submit" [disabled]="enviandoDenuncia()">
+            @if (enviandoDenuncia()) {
+              Enviando...
+            } @else {
+              🚨 Enviar denúncia
+            }
+          </button>
+
+        </form>
+      }
+    </div>
+  }
+
+  <section id="inicio" class="hero section-gradient">
+    <div class="hero-left">
+      <span class="pill">🔒 Denuncie · É anônimo · Salva vidas</span>
+      <h1>Sua voz contra<br />a violência</h1>
+      <p>
+        Denuncie de forma anônima e ajude a mapear a violência
+        contra a mulher em Pernambuco.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#denuncia">📢 Fazer uma denúncia</a>
+        <a class="btn btn-light" href="#acompanhar">Acompanhar denúncia</a>
+      </div>
+
+      <small class="hero-note">🔐 Sigilo garantido · Sua identidade protegida</small>
+    </div>
+
+    <div id="mapa" class="hero-map card">
+      <h3>🗺️ Mapa da violência · Dados reais</h3>
+      <div class="map-counter">
+        @if (dashboard(); as dados) {
+          <strong>{{ dados.publico | number: '1.0-0' }} casos registrados em 2026</strong>
+        } @else {
+          <strong>Dados em atualização</strong>
+        }
+        <span>Fonte: dados públicos + denúncias Eco</span>
+      </div>
+
+      <div class="map-area google-map-wrapper">
+        <div #googleMapCanvas class="google-map-canvas"></div>
+
+        @if (carregandoMapa()) {
+          <div class="map-loading">Carregando dados do mapa...</div>
+        } @else if (erroMapa()) {
+          <div class="map-loading">{{ erroMapa() }}</div>
+        } @else if (mapaPronto() && heatmap().length === 0) {
+          <div class="map-loading">Ainda não há dados geolocalizados.</div>
+        }
+      </div>
+
+      <div class="legend">
+        <span>⬤ Menor incidência</span>
+        <span>⬤ Maior incidência</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="como-funciona" class="how-it-works">
+    <h2>Como funciona</h2>
+    <p>Simples · Rápido · Anônimo</p>
+
+    <div class="steps">
+      <article>
+        <div class="icon">📝</div>
+        <h4>1. Faça sua denúncia</h4>
+        <p>Relate o que aconteceu de forma anônima e segura.</p>
+        <span class="tag">Sigilo total</span>
+      </article>
+      <article>
+        <div class="icon">📍</div>
+        <h4>2. Localização no mapa</h4>
+        <p>Sua denúncia aparece no mapa para gerar alertas.</p>
+        <span class="tag">Dados reais</span>
+      </article>
+      <article>
+        <div class="icon">📊</div>
+        <h4>3. Acompanhe os dados</h4>
+        <p>Veja o impacto e ajude outras mulheres.</p>
+        <span class="tag">Impacto social</span>
+      </article>
+    </div>
+  </section>
+
+  <section class="actions section-gradient" id="denuncia">
+    <article class="panel card">
+      <h3>📢 Faça sua denúncia agora</h3>
+      <p>Você não está sozinha. Denuncie.</p>
+
+      <div class="tipo-denuncia">
+        <button type="button" class="opcao-denuncia" (click)="abrirDenunciaModal(true)">
+          <div class="opcao-icon">🔒</div>
+          <div class="opcao-content">
+            <strong>Denúncia Anônima</strong>
+            <small>Sua identidade será totalmente protegida</small>
+          </div>
+        </button>
+        <button type="button" class="opcao-denuncia" (click)="abrirDenunciaModal(false)">
+          <div class="opcao-icon">👤</div>
+          <div class="opcao-content">
+            <strong>Denúncia com Cadastro</strong>
+            <small>Acompanhe o status da sua denúncia</small>
+          </div>
+        </button>
+      </div>
+    </article>
+
+    <article class="panel card" id="acompanhar">
+      <h3>🔎 Acompanhar denúncia</h3>
+      <p>Informe seu código de protocolo</p>
+
+      <form [formGroup]="acompanhamentoForm" (ngSubmit)="acompanharDenuncia()">
+        <input
+          type="text"
+          formControlName="codigo"
+          placeholder="Ex: ECO-ABC12345"
+          autocomplete="off"
+        />
+
+        <button class="btn btn-dark w-100" type="submit" [disabled]="consultandoCodigo()">
+          @if (consultandoCodigo()) {
+            Consultando...
+          } @else {
+            🧾 Ver status da denúncia
+          }
+        </button>
+      </form>
+
+      @if (denunciaConsultada(); as denuncia) {
+        <div class="status-box">
+          <div><strong>Código:</strong> {{ denuncia.codigo }}</div>
+          <div><strong>Status:</strong> {{ statusLabel(denuncia.status) }}</div>
+          <div><strong>Data:</strong> {{ denuncia.dataCriacao | date: 'dd/MM/yyyy HH:mm' }}</div>
+        </div>
+      }
+
+      <small>
+        Acompanhe o andamento com seu código único.
+      </small>
+    </article>
+  </section>
+</div>

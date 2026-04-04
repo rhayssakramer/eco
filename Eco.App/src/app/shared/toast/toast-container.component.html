@@ -1,0 +1,8 @@
+<div class="toast-wrapper">
+  @for (item of toast.toasts(); track item.id) {
+    <div class="toast" [class]="'toast ' + item.type">
+      <span class="msg">{{ item.message }}</span>
+      <button type="button" class="close" (click)="toast.remove(item.id)" aria-label="Fechar">✕</button>
+    </div>
+  }
+</div>
