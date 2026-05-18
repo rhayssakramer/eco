@@ -4,6 +4,7 @@
 bin/
 obj/
 out/
+artifacts/
 
 # User-specific files
 *.user

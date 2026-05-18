@@ -5,6 +5,7 @@ using Eco.Api.Models;
 using Eco.Api.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 
 namespace Eco.Api.Controllers;
 
@@ -14,10 +15,13 @@ public class DenunciasController : ControllerBase
 {
     private readonly AppDbContext _context;
     private readonly DadosPublicosService _dadosService;
+    private readonly ProcessarArquivosService _processarArquivos;
+    
     public DenunciasController(AppDbContext context, DadosPublicosService dadosService)
     {
         _context = context;
         _dadosService = dadosService;
+        _processarArquivos = new ProcessarArquivosService();
     }
 
     [HttpPost]
@@ -138,30 +142,6 @@ public class DenunciasController : ControllerBase
         {
             mensagem = "Upload realizado com sucesso",
             arquivo = nomeArquivo
-        });
-    }
-
-    [HttpPost("panico")]
-    public async Task<IActionResult> Panico(PanicoDto dto)
-    {
-        var denuncia = new Denuncia
-        {
-            Tipo = TipoDenuncia.Violencia,
-            Descricao = dto.Descricao ?? "🚨 Emergência acionada via botão do pânico.",
-            Latitude = dto.Latitude,
-            Longitude = dto.Longitude,
-            Status = StatusDenuncia.Emergencia,
-            DataCriacao = DateTime.UtcNow,
-            Codigo = $"ECO-{Guid.NewGuid().ToString().Substring(0, 8).ToUpper()}"
-        };
-
-        _context.Denuncias.Add(denuncia);
-        await _context.SaveChangesAsync();
-
-        return Ok(new
-        {
-            mensagem = "🚨 Alerta enviado com sucesso",
-            codigo = denuncia.Codigo
         });
     }
 
@@ -292,39 +272,7 @@ public class DenunciasController : ControllerBase
     public async Task<IActionResult> DashboardCompleto()
     {
         var eco = await _context.Denuncias.CountAsync();
-
-        var caminho = Path.Combine(
-            Directory.GetCurrentDirectory(), 
-            "DataSources", 
-            "dados-violencia-pe.csv"
-        );
-
-        var totalPublico = 0;
-        if (System.IO.File.Exists(caminho))
-        {
-            var dadosPublicos = _dadosService.LerCsv(caminho);
-            totalPublico = dadosPublicos.Sum(d => d.Quantidade);
-        }
-
-        var caminhoExternos = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "DataSources",
-            "dados-violencia-externos.csv"
-        );
-
-        var totalExterno = 0;
-        if (System.IO.File.Exists(caminhoExternos))
-        {
-            var dadosExternos = _dadosService.LerCsvExterno(caminhoExternos);
-            totalExterno = dadosExternos.Sum(d => d.Quantidade);
-        }
-
-        return Ok(new
-        {
-            eco,
-            publico = totalPublico + totalExterno,
-            diferenca = (totalPublico + totalExterno) - eco
-        });
+        return Ok(new { eco });
     }
 
     [HttpGet("dados-publicos")]
@@ -359,11 +307,7 @@ public class DenunciasController : ControllerBase
     [HttpGet("dados-externos")]
     public IActionResult DadosExternos()
     {
-        var caminhoExternos = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "DataSources",
-            "dados-violencia-externos.csv"
-        );
+        var caminhoExternos = ObterCaminhoDadosExternos();
 
         var dados = _dadosService.LerCsvExterno(caminhoExternos)
             .OrderByDescending(d => d.DataRegistro)
@@ -390,15 +334,163 @@ public class DenunciasController : ControllerBase
         if (dto.Longitude is < -180 or > 180)
             return BadRequest("Longitude inválida.");
 
-        var caminhoExternos = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "DataSources",
-            "dados-violencia-externos.csv"
-        );
+        var caminhoExternos = ObterCaminhoDadosExternos();
 
         var criado = _dadosService.AdicionarCsvExterno(caminhoExternos, dto);
 
         return Created(string.Empty, criado);
+    }
+
+    [HttpPost("dados-externos/importar-csv")]
+    public async Task<IActionResult> ImportarDadosExternosCsv(
+        IFormFile file,
+        [FromForm] string? fonte,
+        [FromForm] bool substituir = false)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("Envie um arquivo CSV válido.");
+
+        if (!Path.GetExtension(file.FileName).Equals(".csv", StringComparison.OrdinalIgnoreCase))
+            return BadRequest("A importação automática aceita apenas arquivos CSV.");
+
+        await using var stream = file.OpenReadStream();
+        var resultado = await _dadosService.ImportarCsvExternoAsync(
+            ObterCaminhoDadosExternos(),
+            stream,
+            string.IsNullOrWhiteSpace(fonte) ? "CSV importado" : fonte,
+            substituir);
+
+        return Ok(resultado);
+    }
+
+    [HttpPost("dados-externos/importar-url")]
+    public async Task<IActionResult> ImportarDadosExternosUrl([FromBody] ImportarDadosExternosUrlDto dto)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Url))
+            return BadRequest("Informe a URL da fonte.");
+
+        if (!Uri.TryCreate(dto.Url, UriKind.Absolute, out var uri)
+            || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
+        {
+            return BadRequest("Informe uma URL válida HTTP/HTTPS.");
+        }
+
+        try
+        {
+            var resultado = await _dadosService.ImportarDadosExternosPorUrlAsync(
+                ObterCaminhoDadosExternos(),
+                dto.Url,
+                string.IsNullOrWhiteSpace(dto.Fonte) ? uri.Host : dto.Fonte,
+                dto.Substituir);
+
+            return Ok(resultado);
+        }
+        catch (HttpRequestException)
+        {
+            return BadRequest("Não foi possível acessar a URL informada.");
+        }
+        catch (JsonException)
+        {
+            return BadRequest("A URL retornou um JSON inválido para importação.");
+        }
+    }
+
+    [HttpPost("dados-externos/comparar")]
+    public IActionResult CompararDados(IFormFile file, [FromForm] string? fonte)
+    {
+        if (file == null || file.Length == 0)
+            return BadRequest("Envie um arquivo válido (Excel ou PDF).");
+
+        try
+        {
+            var extensao = Path.GetExtension(file.FileName).ToLower();
+            List<(string bairro, string tipo, int quantidade)> novosDados = [];
+
+            // Ler arquivo
+            if (extensao == ".xlsx" || extensao == ".xls")
+            {
+                using var stream = file.OpenReadStream();
+                novosDados = _processarArquivos.LerExcel(stream);
+            }
+            else if (extensao == ".pdf")
+            {
+                using var stream = file.OpenReadStream();
+                novosDados = _processarArquivos.LerPdf(stream);
+            }
+            else
+            {
+                return BadRequest("Arquivo deve ser Excel (.xlsx, .xls) ou PDF (.pdf)");
+            }
+
+            if (novosDados.Count == 0)
+                return BadRequest("Nenhum dado foi encontrado no arquivo.");
+
+            // Carregar dados existentes
+            var caminhoExternos = ObterCaminhoDadosExternos();
+            var dadosExistentes = _dadosService.LerCsvExterno(caminhoExternos);
+
+            // Fazer comparação
+            var comparativo = new
+            {
+                novosDados = novosDados.Select(d => new { d.bairro, d.tipo, d.quantidade }),
+                comparacao = novosDados.Select(novo =>
+                {
+                    var existente = dadosExistentes.FirstOrDefault(d =>
+                        d.Bairro.Equals(novo.bairro, StringComparison.OrdinalIgnoreCase) &&
+                        d.Tipo.Equals(novo.tipo, StringComparison.OrdinalIgnoreCase));
+
+                    return new
+                    {
+                        bairro = novo.bairro,
+                        tipo = novo.tipo,
+                        novo = novo.quantidade,
+                        existente = existente?.Quantidade ?? 0,
+                        diferenca = novo.quantidade - (existente?.Quantidade ?? 0),
+                        percentualMudanca = existente?.Quantidade > 0
+                            ? Math.Round(((novo.quantidade - existente.Quantidade) / (double)existente.Quantidade) * 100, 2)
+                            : (novo.quantidade > 0 ? 100 : 0)
+                    };
+                }).OrderByDescending(c => Math.Abs(c.diferenca)).ToList()
+            };
+
+            return Ok(comparativo);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest($"Erro ao processar arquivo: {ex.Message}");
+        }
+    }
+
+    [HttpPost("dados-externos/importar-estupro")]
+    public async Task<IActionResult> ImportarEstupro([FromForm] bool substituir = false)
+    {
+        try
+        {
+            var caminhoFonte = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "DataSources",
+                "estupro-pe.csv"
+            );
+
+            if (!System.IO.File.Exists(caminhoFonte))
+                return BadRequest("Arquivo de dados de estupro não encontrado.");
+
+            var resultado = await _dadosService.ImportarCsvExternoAsync(
+                ObterCaminhoDadosExternos(),
+                System.IO.File.OpenRead(caminhoFonte),
+                "Secretaria de Segurança Pública - PE (Estupro)",
+                substituir);
+
+            return Ok(resultado);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new { erro = "Erro ao importar dados de estupro", detalhes = ex.Message });
+        }
     }
 
     [HttpGet("heatmap")]
@@ -418,6 +510,27 @@ public class DenunciasController : ControllerBase
                 quantidade = d.Count()
             })
             .ToListAsync();
+
+        var caminhoDadosPublicos = Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "DataSources",
+            "dados-violencia-pe.csv"
+        );
+
+        var dadosPublicos = _dadosService.LerCsv(caminhoDadosPublicos)
+            .Where(d => d.Latitude is >= -90 and <= 90 && d.Longitude is >= -180 and <= 180)
+            .GroupBy(d => new
+            {
+                Latitude = Math.Round(d.Latitude, 2),
+                Longitude = Math.Round(d.Longitude, 2)
+            })
+            .Select(g => new
+            {
+                latitude = g.Key.Latitude,
+                longitude = g.Key.Longitude,
+                quantidade = g.Sum(x => x.Quantidade)
+            })
+            .ToList();
 
         var caminhoExternos = Path.Combine(
             Directory.GetCurrentDirectory(),
@@ -440,6 +553,7 @@ public class DenunciasController : ControllerBase
             .ToList();
 
         var dados = dadosInternos
+            .Concat(dadosPublicos)
             .Concat(dadosExternos)
             .GroupBy(d => new { d.latitude, d.longitude })
             .Select(g => new
@@ -449,14 +563,6 @@ public class DenunciasController : ControllerBase
                 quantidade = g.Sum(x => x.quantidade)
             })
             .ToList();
-
-        // Se vazio, retorna dados de teste de Recife
-        if (dados.Count == 0)
-        {
-            dados.Add(new { latitude = -8.04, longitude = -34.87, quantidade = 5 });
-            dados.Add(new { latitude = -8.06, longitude = -34.88, quantidade = 3 });
-            dados.Add(new { latitude = -8.05, longitude = -34.86, quantidade = 8 });
-        }
 
         return Ok(dados);
     }
@@ -481,13 +587,6 @@ public class DenunciasController : ControllerBase
         .ToListAsync();
 
         return Ok(evidencias);
-    }
-
-    [HttpGet("dados-publicos-api")]
-    public async Task<IActionResult> DadosPublicosApi()
-    {
-        var dados = await _dadosService.ObterDadosAsync();
-        return Ok(dados);
     }
 
     [HttpPut("{id}/status")]
@@ -559,6 +658,15 @@ public class DenunciasController : ControllerBase
             ".mp4" or ".webm" => "video",
             _ => "arquivo"
         };
+    }
+
+    private static string ObterCaminhoDadosExternos()
+    {
+        return Path.Combine(
+            Directory.GetCurrentDirectory(),
+            "DataSources",
+            "dados-violencia-externos.csv"
+        );
     }
 
 }

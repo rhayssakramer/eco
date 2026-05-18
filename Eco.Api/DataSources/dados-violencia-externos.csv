@@ -1,0 +1,22 @@
+bairro,tipo,quantidade,fonte,dataRegistro,latitude,longitude
+RECIFE,Violência Doméstica/Familiar,2673,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.0476,-34.877
+JABOATAO DOS GUARARAPES,Violência Doméstica/Familiar,1112,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.1148,-35.0345
+PETROLINA,Violência Doméstica/Familiar,933,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-9.3931,-40.5030
+OLINDA,Violência Doméstica/Familiar,849,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.0084,-34.8566
+PAULISTA,Violência Doméstica/Familiar,772,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-7.9425,-34.8598
+CARUARU,Violência Doméstica/Familiar,630,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.2828,-35.9747
+CABO DE SANTO AGOSTINHO,Violência Doméstica/Familiar,340,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.2706,-35.0609
+SERRA TALHADA,Violência Doméstica/Familiar,281,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-9.9575,-38.9731
+CAMARAGIBE,Violência Doméstica/Familiar,279,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.0388,-35.1183
+GARANHUNS,Violência Doméstica/Familiar,264,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.8889,-36.4916
+RECIFE,Estupro,104,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.0476,-34.877
+JABOATAO DOS GUARARAPES,Estupro,46,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.1148,-35.0345
+CARUARU,Estupro,31,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.2828,-35.9747
+PETROLINA,Estupro,27,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-9.3931,-40.5030
+OLINDA,Estupro,25,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.0084,-34.8566
+PAULISTA,Estupro,21,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-7.9425,-34.8598
+IPOJUCA,Estupro,15,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.1567,-35.1731
+GARANHUNS,Estupro,14,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.8889,-36.4916
+ARARIPINA,Estupro,11,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-7.5731,-40.4819
+CABO DE SANTO AGOSTINHO,Estupro,11,Secretaria de Segurança Pública - PE,2026-05-18T00:00:00Z,-8.2706,-35.0609
+
