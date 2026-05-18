@@ -643,7 +643,7 @@ export class DashboardComponent implements AfterViewInit {
   protected carregarDadosPublicos(exibirToastErro = true): void {
     this.carregandoDadosPublicos.set(true);
 
-    this.http.get<DadoPublico[]>(`${this.apiBase}/api/denuncias/dados-publicos`)
+    this.http.get<DadoPublico[]>(`${this.apiBase}/api/denuncias/dados-externos`)
       .subscribe({
         next: (data) => {
           this.dadosPublicos.set(data ?? []);
@@ -911,7 +911,7 @@ export class DashboardComponent implements AfterViewInit {
           return of<Denuncia[]>([]);
         })
       ),
-      publicos: this.http.get<DadoPublico[]>(`${this.apiBase}/api/denuncias/dados-publicos`).pipe(
+      publicos: this.http.get<DadoPublico[]>(`${this.apiBase}/api/denuncias/dados-externos`).pipe(
         catchError(() => {
           falhas.push('publicos');
           return of<DadoPublico[]>([]);
