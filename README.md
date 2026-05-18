@@ -488,16 +488,27 @@ Authorization: Bearer <seu_jwt_token>
 
 ---
 
-## 👥 Créditos
+# 👥 Créditos  
 
-### Equipe ECO
-
-Desenvolvido com 💜 pela equipe ECO.
-
----
-
-<div align="center">
+<div>
   <p><strong>A voz que não pode ser ignorada.</strong></p>
   <p>ECO: Denúncias de violência com foco em segurança, anonimato e impacto social.</p>
-  <sub>© 2026 ECO. Todos os direitos reservados.</sub>
-</div>
+</div> 
+
+*Nota: Este projeto é apenas para fins educacionais e não possui nenhuma afiliação oficial.*
+
+## 👩🏼‍💻 Autora:
+<table style="border=0">
+  <tr>
+    <td align="left">
+      <a href="https://github.com/rhayssakramer">
+        <span><b>Rhayssa Kramer</b></span>
+      </a>
+      <br>
+      <span>Sr. Assoc, Full-Stack Development</span>
+    </td>
+  </tr>
+</table> 
+<div align="center"><p>© 2026 ECO. Todos os direitos reservados.</p></div>  
+
+<div align="center"><a href="https://github.com/rhayssakramer"><img src="https://github.com/rhayssakramer/rhayssakramer/blob/main/img/rodape.png"></a></div>
