@@ -133,6 +133,33 @@ export class HomeComponent implements AfterViewInit {
   protected readonly denunciaTipoSelecionado = signal(false);
   protected readonly mostrarDenunciaModal = signal(false);
 
+  protected readonly mapaResumo = computed(() => {
+    const quantidades = this.heatmap()
+      .map((ponto) => Math.max(1, ponto.quantidade ?? 0))
+      .sort((a, b) => a - b);
+
+    if (quantidades.length === 0) {
+      return {
+        pontos: 0,
+        min: 0,
+        mediana: 0,
+        max: 0
+      };
+    }
+
+    const meio = Math.floor(quantidades.length / 2);
+    const mediana = quantidades.length % 2 === 0
+      ? Math.round((quantidades[meio - 1] + quantidades[meio]) / 2)
+      : quantidades[meio];
+
+    return {
+      pontos: quantidades.length,
+      min: quantidades[0],
+      mediana,
+      max: quantidades[quantidades.length - 1]
+    };
+  });
+
   constructor() {
     this.carregarDashboard();
     this.carregarHeatmap();
@@ -578,16 +605,18 @@ export class HomeComponent implements AfterViewInit {
     for (const ponto of dados) {
       const quantidade = Math.max(1, ponto.quantidade);
       const escala = quantidade / Math.max(1, maxQuantidade);
+      const escalaSuavizada = Math.sqrt(escala);
+      const cor = this.obterCorIncidencia(escala);
 
       const circle = new google.maps.Circle({
         map: this.map,
         center: { lat: ponto.latitude, lng: ponto.longitude },
-        strokeColor: '#E11D48',
+        strokeColor: cor,
         strokeOpacity: 0.55,
         strokeWeight: 1,
-        fillColor: '#FF2A97',
-        fillOpacity: 0.2 + (escala * 0.35),
-        radius: 120 + (escala * 450)
+        fillColor: cor,
+        fillOpacity: 0.22 + (escalaSuavizada * 0.36),
+        radius: 110 + (escalaSuavizada * 520)
       });
 
       this.mapCircles.push(circle);
@@ -601,6 +630,18 @@ export class HomeComponent implements AfterViewInit {
     }
 
     this.map.fitBounds(bounds, 56);
+  }
+
+  private obterCorIncidencia(escala: number): string {
+    if (escala >= 0.75) {
+      return '#E11D48';
+    }
+
+    if (escala >= 0.4) {
+      return '#F97316';
+    }
+
+    return '#F59E0B';
   }
 
   private definirGeolocalizacao(): void {

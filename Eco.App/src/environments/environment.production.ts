@@ -3,5 +3,5 @@ export const environment = {
   name: 'production',
   apiBaseUrl: 'https://api.eco.local',
   appBaseUrl: 'https://eco.local',
-  googleMapsApiKey: ''
+  googleMapsApiKey: 'AIzaSyAo2H6Fu-z7GHa3kutP9-mYaM2BqvyTnhQ'
 };

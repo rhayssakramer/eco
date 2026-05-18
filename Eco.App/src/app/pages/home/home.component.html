@@ -334,7 +334,7 @@
       <h3>🗺️ Mapa da violência · Dados reais</h3>
       <div class="map-counter">
         @if (dashboard(); as dados) {
-          <strong>{{ dados.publico | number: '1.0-0' }} casos registrados em 2026</strong>
+          <strong>{{ (dados.eco + dados.publico) | number: '1.0-0' }} casos mapeados (ECO + públicos)</strong>
         } @else {
           <strong>Dados em atualização</strong>
         }
@@ -354,8 +354,18 @@
       </div>
 
       <div class="legend">
-        <span>⬤ Menor incidência</span>
-        <span>⬤ Maior incidência</span>
+        <div class="legend-scale">
+          <span class="legend-text">Menor incidência</span>
+          <div class="legend-gradient"></div>
+          <span class="legend-text">Maior incidência</span>
+        </div>
+
+        @if (mapaResumo().pontos > 0) {
+          <div class="legend-sampling">
+            <span>Amostragem: {{ mapaResumo().pontos }} pontos geolocalizados</span>
+            <span>mín {{ mapaResumo().min }} · med {{ mapaResumo().mediana }} · máx {{ mapaResumo().max }}</span>
+          </div>
+        }
       </div>
     </div>
   </section>
