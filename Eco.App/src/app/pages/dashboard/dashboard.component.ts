@@ -186,7 +186,7 @@ export class DashboardComponent implements AfterViewInit {
   protected readonly importandoDadosExternos = signal(false);
   protected readonly arquivoCsvDadoExterno = signal<File | null>(null);
   protected readonly fonteImportacaoExterna = signal('SDS PE / CSV');
-  protected readonly urlImportacaoExterna = signal('');
+
   protected readonly mapaPronto = signal(false);
   protected readonly erroMapa = signal('');
 
@@ -489,9 +489,7 @@ export class DashboardComponent implements AfterViewInit {
     this.fonteImportacaoExterna.set(valor);
   }
 
-  protected atualizarUrlImportacao(valor: string): void {
-    this.urlImportacaoExterna.set(valor);
-  }
+
 
   protected importarCsvDadosExternos(): void {
     const arquivo = this.arquivoCsvDadoExterno();
@@ -558,33 +556,7 @@ export class DashboardComponent implements AfterViewInit {
     this.toast.show(mensagemComparacao, 'info');
   }
 
-  protected importarUrlDadosExternos(): void {
-    const url = this.urlImportacaoExterna().trim();
-    if (!url) {
-      this.toast.show('Informe a URL da fonte CSV ou API.', 'warning');
-      return;
-    }
 
-    this.importandoDadosExternos.set(true);
-
-    this.http.post<ImportacaoDadosExternosResultado>(`${this.apiBase}/api/denuncias/dados-externos/importar-url`, {
-      url,
-      fonte: this.fonteImportacaoExterna().trim() || 'Importação por URL',
-      substituir: false
-    }).subscribe({
-      next: (resultado) => {
-        this.importandoDadosExternos.set(false);
-        this.toast.show(resultado.mensagem || 'Fonte importada com sucesso.', 'success');
-        this.carregarResumoDashboard();
-        this.carregarDadosPublicos();
-        this.carregarDadosExternos();
-      },
-      error: () => {
-        this.importandoDadosExternos.set(false);
-        this.toast.show('Não foi possível importar a URL informada.', 'error');
-      }
-    });
-  }
 
   protected formatarDataRegistro(data: string): string {
     return new Date(data).toLocaleString('pt-BR', {

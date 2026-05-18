@@ -275,34 +275,7 @@ public class DenunciasController : ControllerBase
         return Ok(new { eco });
     }
 
-    [HttpGet("dados-publicos")]
-    public IActionResult DadosPublicos()
-    {
-        var caminho = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "DataSources",
-            "dados-violencia-pe.csv"
-        );
 
-        var dados = _dadosService.LerCsv(caminho);
-
-        var caminhoExternos = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "DataSources",
-            "dados-violencia-externos.csv"
-        );
-        var dadosExternos = _dadosService.LerCsvExterno(caminhoExternos)
-            .Select(d => new DadoPublico
-            {
-                Bairro = d.Bairro,
-                Tipo = d.Tipo,
-                Quantidade = d.Quantidade,
-                Latitude = d.Latitude,
-                Longitude = d.Longitude
-            });
-
-        return Ok(dados.Concat(dadosExternos));
-    }
 
     [HttpGet("dados-externos")]
     public IActionResult DadosExternos()
@@ -511,13 +484,8 @@ public class DenunciasController : ControllerBase
             })
             .ToListAsync();
 
-        var caminhoDadosPublicos = Path.Combine(
-            Directory.GetCurrentDirectory(),
-            "DataSources",
-            "dados-violencia-pe.csv"
-        );
-
-        var dadosPublicos = _dadosService.LerCsv(caminhoDadosPublicos)
+        var caminhoExternos = ObterCaminhoDadosExternos();
+        var dadosPublicos = _dadosService.LerCsvExterno(caminhoExternos)
             .Where(d => d.Latitude is >= -90 and <= 90 && d.Longitude is >= -180 and <= 180)
             .GroupBy(d => new
             {
@@ -532,13 +500,13 @@ public class DenunciasController : ControllerBase
             })
             .ToList();
 
-        var caminhoExternos = Path.Combine(
+        var caminhoExternos2 = Path.Combine(
             Directory.GetCurrentDirectory(),
             "DataSources",
             "dados-violencia-externos.csv"
         );
 
-        var dadosExternos = _dadosService.LerCsvExterno(caminhoExternos)
+        var dadosExternos = _dadosService.LerCsvExterno(caminhoExternos2)
             .GroupBy(d => new
             {
                 Latitude = Math.Round(d.Latitude, 2),

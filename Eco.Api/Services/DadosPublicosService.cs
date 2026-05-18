@@ -22,51 +22,7 @@ public class DadosPublicosService
         _http = http;
     }
 
-    public List<DadoPublico> LerCsv(string caminho)
-    {
-        if (!File.Exists(caminho))
-            return new List<DadoPublico>();
 
-        var linhas = File.ReadAllLines(caminho);
-        if (linhas.Length == 0)
-            return new List<DadoPublico>();
-
-        var dados = new List<DadoPublico>();
-
-        var cabecalho = ParseCsvLine(linhas[0]);
-        var indiceBairro = FindHeaderIndex(cabecalho, HeadersBairro);
-        var indiceTipo = FindHeaderIndex(cabecalho, HeadersTipo);
-        var indiceQuantidade = FindHeaderIndex(cabecalho, HeadersQuantidade);
-        var indiceLatitude = FindHeaderIndex(cabecalho, HeadersLatitude);
-        var indiceLongitude = FindHeaderIndex(cabecalho, HeadersLongitude);
-
-        if (indiceBairro < 0 || indiceTipo < 0 || indiceQuantidade < 0)
-            return new List<DadoPublico>();
-
-        foreach (var linha in linhas.Skip(1))
-        {
-            if (string.IsNullOrWhiteSpace(linha))
-                continue;
-
-            var colunas = ParseCsvLine(linha);
-            if (!TryGetInt(colunas, indiceQuantidade, out var quantidade))
-                continue;
-
-            TryGetDouble(colunas, indiceLatitude, out var latitude);
-            TryGetDouble(colunas, indiceLongitude, out var longitude);
-
-            dados.Add(new DadoPublico
-            {
-                Bairro = GetValue(colunas, indiceBairro),
-                Tipo = GetValue(colunas, indiceTipo),
-                Quantidade = quantidade,
-                Latitude = latitude,
-                Longitude = longitude
-            });
-        }
-
-        return dados;
-    }
 
     public List<DadoPublicoExterno> LerCsvExterno(string caminho)
     {
