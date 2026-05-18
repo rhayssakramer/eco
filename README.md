@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🌿 ECO
+# 💜 ECO - Sua voz contra a violência
 
 **A voz que não pode ser ignorada**
 
