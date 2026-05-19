@@ -19,11 +19,11 @@ ECO é uma plataforma de denúncia anônima de violência com foco em segurança
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
-- [Arquitetura](#-arquitetura)
+- [Arquitetura](https://github.com/rhayssakramer/eco/edit/main/README.md#%EF%B8%8F-arquitetura)
 - [Tecnologias](#-tecnologias)
 - [Estrutura do Repositório](#-estrutura-do-repositório)
 - [Pré-requisitos](#-pré-requisitos)
-- [Imagens]()
+- [Imagens](https://github.com/rhayssakramer/eco/edit/main/README.md#-imagens)
 - [Instalação e Configuração](#-instalação-e-configuração)
 - [Executando o Projeto](#-executando-o-projeto)
 - [API Endpoints](#-api-endpoints)
@@ -257,7 +257,7 @@ eco/
 
 ---
 
-## Imagens
+## 🖼 Imagens
 <img src="https://github.com/rhayssakramer/eco/blob/main/images/img_1.png">
 <img src="https://github.com/rhayssakramer/eco/blob/main/images/img_2.png">
 <img src="https://github.com/rhayssakramer/eco/blob/main/images/img_3.png">
