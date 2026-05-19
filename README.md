@@ -19,7 +19,7 @@ ECO é uma plataforma de denúncia anônima de violência com foco em segurança
 
 - [Sobre o Projeto](#-sobre-o-projeto)
 - [Funcionalidades](#-funcionalidades)
-- [Arquitetura](https://github.com/rhayssakramer/eco/edit/main/README.md#%EF%B8%8F-arquitetura)
+- [Arquitetura](#%EF%B8%8F-arquitetura)
 - [Tecnologias](#-tecnologias)
 - [Estrutura do Repositório](#-estrutura-do-repositório)
 - [Pré-requisitos](#-pré-requisitos)
