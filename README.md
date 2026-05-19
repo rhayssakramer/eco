@@ -23,6 +23,7 @@ ECO é uma plataforma de denúncia anônima de violência com foco em segurança
 - [Tecnologias](#-tecnologias)
 - [Estrutura do Repositório](#-estrutura-do-repositório)
 - [Pré-requisitos](#-pré-requisitos)
+- [Imagens]()
 - [Instalação e Configuração](#-instalação-e-configuração)
 - [Executando o Projeto](#-executando-o-projeto)
 - [API Endpoints](#-api-endpoints)
@@ -254,6 +255,18 @@ eco/
 ### Opcional
 - [SQL Server Management Studio](https://docs.microsoft.com/pt-br/sql/ssms/download-sql-server-management-studio-ssms) (para produção)
 
+---
+
+## Imagens
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_1.png">
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_2.png">
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_3.png">
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_4.png">
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_5.png">
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_6.png">
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_7.png">  
+<img src="https://github.com/rhayssakramer/eco/blob/main/images/img_8.png">  
+  
 ---
 
 ## 🔧 Instalação e Configuração
